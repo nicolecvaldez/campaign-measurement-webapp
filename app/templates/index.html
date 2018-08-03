@@ -1,0 +1,32 @@
+{% extends "bootstrap/base.html" %}
+{% block title %}Home{% endblock %}
+
+{% block content %}
+
+<div class="container" style="margin-top: 5%; text-align: center">
+    <img src="{{ url_for('static', filename = 'img/How-to-Measure-the-Success-of-Your-Online-Marketing-Campaigns.png') }}" height="250" align="middle">
+    <h1>Measurements</h1>
+    <br>
+
+    <ol>
+        <li>Upload your data!</li>
+        <li>Wait for us to finish processing!</li>
+        <li>Get your results!</li>
+    </ol>
+
+    <br>
+
+    <div class="row">
+        <div class="col-sm-4 col-sm-offset-4">
+            <form method=post enctype=multipart/form-data>
+                <div style="text-align: center">
+                    <br>
+                    <input type=file name=file>
+                    <br>
+                    <input type=submit value=Upload>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
