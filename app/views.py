@@ -25,12 +25,19 @@ def upload_file():
         if file.filename == '':
             flash('No selected file')
             return redirect(request.url)
+        if not allowed_file(file.filename):
+            flash('Not correct file type')
+            return redirect(request.url)
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            return redirect(url_for('uploaded_file',
+            return redirect(url_for('select_measurement',
                                     filename=filename))
     return render_template("index.html")
+
+@app.route('/select/<filename>', methods=['GET', 'POST'])
+def select_measurement(filename):
+    return render_template("select_measurement.html", filename=filename)
 
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):
