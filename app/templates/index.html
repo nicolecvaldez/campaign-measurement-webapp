@@ -8,7 +8,7 @@
     <h1>Measurements</h1>
     <br>
 
-    <ol>
+    <ol style="list-style-position:inside;">
         <li>Upload your data!</li>
         <li>Wait for us to finish processing!</li>
         <li>Get your results!</li>
@@ -16,17 +16,18 @@
 
     <br>
 
-    <div class="row">
-        <div class="col-sm-4 col-sm-offset-4">
-            <form method=post enctype=multipart/form-data>
-                <div style="text-align: center">
-                    <br>
-                    <input type=file name=file>
-                    <br>
-                    <input type=submit value=Upload>
-                </div>
-            </form>
-        </div>
+    <form class="form-inline center-block" action="/" method="POST" enctype="multipart/form-data">
+    <div class="input-group">
+        <!--<label id="browsebutton" class="btn btn-default input-group-addon" for="my-file-selector" style="background-color:white">-->
+            <!--<input id="my-file-selector" type="file" style="display:none;">-->
+            <!--Browse...-->
+        <!--</label>-->
+        <input type="file" name="file" class="form-control" readonly="">
     </div>
+    <button type="submit" class="btn btn-primary">Upload</button>
+    </form>
+
 </div>
+
 {% endblock %}
+
