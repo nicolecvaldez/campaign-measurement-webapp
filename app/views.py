@@ -2,6 +2,7 @@ from flask import render_template, flash, redirect, request, url_for, send_from_
 from app import app
 import os
 from werkzeug.utils import secure_filename
+import csv
 
 
 ALLOWED_EXTENSIONS = set(['csv'])
@@ -31,13 +32,35 @@ def upload_file():
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            return redirect(url_for('select_measurement',
+            return redirect(url_for('select_variables',
                                     filename=filename))
     return render_template("index.html")
 
 @app.route('/select/<filename>', methods=['GET', 'POST'])
-def select_measurement(filename):
-    return render_template("select_measurement.html", filename=filename)
+def select_variables(filename):
+
+    with open(os.path.join(app.config["UPLOAD_FOLDER"], filename), "rU") as f:
+        d_reader = csv.DictReader(f)
+        headers = d_reader.fieldnames
+
+    return render_template("select_variables.html",
+                           filename=filename,
+                           columns=headers
+                           )
+
+@app.route('/calculate_lift', methods=['GET', 'POST'])
+def calculate_lift():
+    if request.method == "POST":
+        var_dict = {
+            "user_id": request.form.get("user_id"),
+            "user_group": request.form.get("user_group"),
+            "user_response": request.form.get("user_response"),
+            "campaign_period": request.form.get("campaign_period"),
+            "metrics_list": request.form.get("metrics_list"),
+        }
+
+    return render_template("calculate_lift.html"
+                           )
 
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):
