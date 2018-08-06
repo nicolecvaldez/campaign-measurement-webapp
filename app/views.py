@@ -3,7 +3,8 @@ from app import app
 import os
 from werkzeug.utils import secure_filename
 import csv
-
+import pandas as pd
+from evaluateCampaign import evaluateCampaign
 
 ALLOWED_EXTENSIONS = set(['csv'])
 
@@ -48,8 +49,8 @@ def select_variables(filename):
                            columns=headers
                            )
 
-@app.route('/calculate_lift', methods=['GET', 'POST'])
-def calculate_lift():
+@app.route('/calculate_lift/<filename>', methods=['GET', 'POST'])
+def calculate_lift(filename):
     if request.method == "POST":
         var_dict = {
             "user_id": request.form.get("user_id"),
@@ -58,9 +59,15 @@ def calculate_lift():
             "campaign_period": request.form.get("campaign_period"),
             "metrics_list": request.form.get("metrics_list"),
         }
-
+        df = pd.read_csv(os.path.join(app.config["UPLOAD_FOLDER"], filename))
+        lolo = evaluateCampaign.evaluateCampaign(df, var_dict["user_id"], var_dict["user_group"], var_dict["user_response"],
+                         var_dict["campaign_period"], var_dict["metrics_list"])
+        print("lolo")
+        print(lolo)
     return render_template("calculate_lift.html"
                            )
+
+
 
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):
