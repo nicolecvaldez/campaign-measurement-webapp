@@ -16,11 +16,12 @@ import pandas as pd
 def aggDF(df, sub_id, group_col, resp, period_col, metrics_cols):
    
     """X"""
-    
+    metrics = list(metrics_cols)
     cols = [sub_id, resp, period_col, group_col]
-    cols.extend(metrics_cols)
+    cols.extend(metrics)
+    print(cols)
     df = df.loc[:, cols].drop_duplicates(keep = 'first')
-    df.loc[:, metrics_cols] = df.loc[:, metrics_cols].fillna(0)
+    df.loc[:, metrics] = df.loc[:, metrics].fillna(0)
     col_agg = {col: 'sum' for col in metrics}
 
     df_metrics = df.groupby([group_col, resp, period_col])           .agg(col_agg).reset_index()

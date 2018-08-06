@@ -4,10 +4,9 @@ import os
 from werkzeug.utils import secure_filename
 import csv
 import pandas as pd
-from evaluateCampaign import evaluateCampaign
+import evaluateCampaign
 
 ALLOWED_EXTENSIONS = set(['csv'])
-
 
 def allowed_file(filename):
     return '.' in filename and \
