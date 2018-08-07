@@ -16,17 +16,24 @@ import pandas as pd
 def aggDF(df, sub_id, group_col, resp, period_col, metrics_cols):
    
     """X"""
-    metrics = list(metrics_cols)
-    cols = [sub_id, resp, period_col, group_col]
-    cols.extend(metrics)
-    print(cols)
-    df = df.loc[:, cols].drop_duplicates(keep = 'first')
-    df.loc[:, metrics] = df.loc[:, metrics].fillna(0)
-    col_agg = {col: 'sum' for col in metrics}
+    if isinstance(metrics_cols, str):
+        cols = [sub_id, resp, period_col, group_col, metrics_cols]
+        print(cols)
+        df = df.loc[:, cols].drop_duplicates(keep = 'first')
+        df.loc[:, metrics_cols] = df.loc[:, metrics_cols].fillna(0)
+        col_agg = {metrics_cols: 'sum'}
 
-    df_metrics = df.groupby([group_col, resp, period_col])           .agg(col_agg).reset_index()
+    elif isinstance(metrics_cols, list):
+        cols = [sub_id, resp, period_col, group_col]
+        cols.extend(metrics_cols)
+        print(cols)
+        df = df.loc[:, cols].drop_duplicates(keep='first')
+        df.loc[:, metrics_cols] = df.loc[:, metrics_cols].fillna(0)
+        col_agg = {col: 'sum' for col in metrics_cols}
 
-    df_subsCnt = df.groupby([group_col, resp])           .agg({sub_id: 'nunique'}).reset_index()
+    df_metrics = df.groupby([group_col, resp, period_col]).agg(col_agg).reset_index()
+
+    df_subsCnt = df.groupby([group_col, resp]).agg({sub_id: 'nunique'}).reset_index()
 
     df_agg = pd.merge(df_metrics, df_subsCnt, on = [group_col, resp])
     return df_agg
@@ -59,8 +66,8 @@ def groupSummary(df_agg, sub_id, period_col, resp, metric, group_col, group_labe
     takeRate = 100*(r/s)
     Ys_pre = sum(df_agg.loc[(df_agg[period_col] == 'pre') & (df_agg[group_col] == group_label), metric]) 
     Ys_post = sum(df_agg.loc[(df_agg[period_col] == 'post') & (df_agg[group_col] == group_label), metric]) 
-    Yr_pre = sum(df_agg.loc[(df_agg[resp] == 1) & (df_agg[period_col] == 'pre') &                         (df_agg[group_col] == group_label), metric])
-    Yr_post = sum(df_agg.loc[(df_agg[resp] == 1) & (df_agg[period_col] == 'post') &                         (df_agg[group_col] == group_label), metric])
+    Yr_pre = sum(df_agg.loc[(df_agg[resp] == 1) & (df_agg[period_col] == 'pre') & (df_agg[group_col] == group_label), metric])
+    Yr_post = sum(df_agg.loc[(df_agg[resp] == 1) & (df_agg[period_col] == 'post') & (df_agg[group_col] == group_label), metric])
     pct_deltaY = 100*((Yr_post/s)/(Yr_pre/s) - 1)
     
     grpSum = {
@@ -96,6 +103,13 @@ def evaluateCampaign(df, sub_id, group_col, resp, period_col, metrics_cols, ctrl
     
     df_agg = aggDF(df, sub_id, group_col, resp, period_col, metrics_cols)
     result = {}
+
+    if isinstance(metrics_cols, str):
+        metrics_cols = [metrics_cols]
+
+    elif isinstance(metrics_cols, list):
+        metrics_cols = metrics_cols
+
     for metric in metrics_cols:
         groups = df_agg[group_col].unique()
         for g in groups:
