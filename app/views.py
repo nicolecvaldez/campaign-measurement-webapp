@@ -59,12 +59,12 @@ def calculate_lift(filename):
             "metrics_list": request.form.get("metrics_list"),
         }
         df = pd.read_csv(os.path.join(app.config["UPLOAD_FOLDER"], filename))
-        lolo = evaluateCampaign.evaluateCampaign(df, var_dict["user_id"], var_dict["user_group"], var_dict["user_response"],
+        output = evaluateCampaign.evaluateCampaign(df, var_dict["user_id"], var_dict["user_group"], var_dict["user_response"],
                          var_dict["campaign_period"], var_dict["metrics_list"])
         print("lolo")
-        print(lolo)
-    return render_template("calculate_lift.html"
-                           )
+        print(output)
+    return render_template("calculate_lift.html",
+                           output=output)
 
 
 
