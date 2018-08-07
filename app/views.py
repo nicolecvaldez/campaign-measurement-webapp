@@ -51,18 +51,19 @@ def select_variables(filename):
 @app.route('/calculate_lift/<filename>', methods=['GET', 'POST'])
 def calculate_lift(filename):
     if request.method == "POST":
+
         var_dict = {
             "user_id": request.form.get("user_id"),
             "user_group": request.form.get("user_group"),
             "user_response": request.form.get("user_response"),
             "campaign_period": request.form.get("campaign_period"),
-            "metrics_list": request.form.get("metrics_list"),
+            "metrics_list": request.form.getlist("metrics_list") if len(request.form.getlist("metrics_list")) > 1 else str(request.form.get("metrics_list")),
         }
+
         df = pd.read_csv(os.path.join(app.config["UPLOAD_FOLDER"], filename))
         output = evaluateCampaign.evaluateCampaign(df, var_dict["user_id"], var_dict["user_group"], var_dict["user_response"],
                          var_dict["campaign_period"], var_dict["metrics_list"])
-        print("lolo")
-        print(output)
+
     return render_template("calculate_lift.html",
                            output=output)
 

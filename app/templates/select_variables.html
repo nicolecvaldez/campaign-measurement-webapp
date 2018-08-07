@@ -16,7 +16,7 @@
             <br>
             <br>
             <h4>Select column name corresponding to user id: e.g. user_id, account_id, etc.</h4>
-            <select name=user_id action="/">
+            <select class="form-control" name=user_id action="/">
                 {% for column in columns %}
                 <option value= "{{column}}" SELECTED> {{column}} </option>
                 {% endfor %}
@@ -25,7 +25,7 @@
             <br>
             <br>
             <h4>Select column name corresponding to user group: containing (target, control)</h4>
-            <select name=user_group action="/">
+            <select class="form-control" name=user_group action="/">
                 {% for column in columns %}
                 <option value= "{{column}}" SELECTED> {{column}} </option>
                 {% endfor %}
@@ -34,7 +34,7 @@
             <br>
             <br>
             <h4>Select column name corresponding to user response: containing (1 for uptake in campaign, 0 for no uptake in campaign)</h4>
-            <select name=user_response action="/">
+            <select class="form-control" name=user_response action="/">
                 {% for column in columns %}
                 <option value= "{{column}}" SELECTED> {{column}} </option>
                 {% endfor %}
@@ -43,7 +43,7 @@
             <br>
             <br>
             <h4>Select column name corresponding to campaign period: containing (pre for before campaign, post for after campaign)</h4>
-            <select name=campaign_period action="/">
+            <select class="form-control" name=campaign_period action="/">
                 {% for column in columns %}
                 <option value= "{{column}}" SELECTED> {{column}} </option>
                 {% endfor %}
@@ -52,7 +52,7 @@
             <br>
             <br>
             <h4>Select list of metrics to be measured: e.g. spending, account balance, etc.</h4>
-            <select name=metrics_list action="/">
+            <select multiple class="form-control" name=metrics_list action="/">
                 {% for column in columns %}
                 <option value= "{{column}}" SELECTED> {{column}} </option>
                 {% endfor %}

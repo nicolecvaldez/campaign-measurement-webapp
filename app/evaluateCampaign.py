@@ -16,17 +16,16 @@ import pandas as pd
 def aggDF(df, sub_id, group_col, resp, period_col, metrics_cols):
    
     """X"""
+
     if isinstance(metrics_cols, str):
         cols = [sub_id, resp, period_col, group_col, metrics_cols]
-        print(cols)
         df = df.loc[:, cols].drop_duplicates(keep = 'first')
         df.loc[:, metrics_cols] = df.loc[:, metrics_cols].fillna(0)
         col_agg = {metrics_cols: 'sum'}
 
-    elif isinstance(metrics_cols, list):
+    else:
         cols = [sub_id, resp, period_col, group_col]
         cols.extend(metrics_cols)
-        print(cols)
         df = df.loc[:, cols].drop_duplicates(keep='first')
         df.loc[:, metrics_cols] = df.loc[:, metrics_cols].fillna(0)
         col_agg = {col: 'sum' for col in metrics_cols}
