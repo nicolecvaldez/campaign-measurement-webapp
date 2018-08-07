@@ -5,7 +5,30 @@
 
 <div class="container" style="margin-top: 5%; text-align: center">
     <h3>Congratulations! You have successfully calculate lift!</h3>
-</div>>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">METRIC</th>
+      <th scope="col">LIFT (TREAT)</th>
+      <th scope="col">LIFT (CTRL)</th>
+      <th scope="col">LIFT (INCREMENT)</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for key, dic in output.items() %}
+    <tr>
+    <th scope="row">{{key}}</th>
+   {% for key2, value in dic.items() %}
+      <td>{{value}}</td>
+   {% endfor %}
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+
+</div>
 
 {% endblock %}
 
