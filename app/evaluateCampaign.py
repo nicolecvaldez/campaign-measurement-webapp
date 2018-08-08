@@ -1,5 +1,3 @@
-
-
 import pandas as pd
 
 
@@ -16,17 +14,17 @@ import pandas as pd
 def aggDF(df, sub_id, group_col, resp, period_col, metrics_cols):
    
     """X"""
-
+    df = df.drop_duplicates(keep='first')
     if isinstance(metrics_cols, str):
         cols = [sub_id, resp, period_col, group_col, metrics_cols]
-        df = df.loc[:, cols].drop_duplicates(keep = 'first')
+        df = df.loc[:, cols]
         df.loc[:, metrics_cols] = df.loc[:, metrics_cols].fillna(0)
         col_agg = {metrics_cols: 'sum'}
 
     else:
         cols = [sub_id, resp, period_col, group_col]
         cols.extend(metrics_cols)
-        df = df.loc[:, cols].drop_duplicates(keep='first')
+        df = df.loc[:, cols]
         df.loc[:, metrics_cols] = df.loc[:, metrics_cols].fillna(0)
         col_agg = {col: 'sum' for col in metrics_cols}
 
@@ -58,15 +56,16 @@ def uptakeRate(n_takers, n_sample):
 def groupSummary(df_agg, sub_id, period_col, resp, metric, group_col, group_label):
     
     """X"""
-    
     r = max(df_agg.loc[(df_agg[resp] == 1) & (df_agg[group_col] == group_label), sub_id]) 
     nr = max(df_agg.loc[(df_agg[resp] == 0) & (df_agg[group_col] == group_label), sub_id])
     s = r + nr
     takeRate = 100*(r/s)
-    Ys_pre = sum(df_agg.loc[(df_agg[period_col] == 'pre') & (df_agg[group_col] == group_label), metric]) 
-    Ys_post = sum(df_agg.loc[(df_agg[period_col] == 'post') & (df_agg[group_col] == group_label), metric]) 
-    Yr_pre = sum(df_agg.loc[(df_agg[resp] == 1) & (df_agg[period_col] == 'pre') & (df_agg[group_col] == group_label), metric])
-    Yr_post = sum(df_agg.loc[(df_agg[resp] == 1) & (df_agg[period_col] == 'post') & (df_agg[group_col] == group_label), metric])
+
+
+    Ys_pre = df_agg.loc[(df_agg[period_col] == 'pre') & (df_agg[group_col] == group_label), metric].sum()
+    Ys_post = df_agg.loc[(df_agg[period_col] == 'post') & (df_agg[group_col] == group_label), metric].sum()
+    Yr_pre = df_agg.loc[(df_agg[resp] == 1) & (df_agg[period_col] == 'pre') & (df_agg[group_col] == group_label), metric].sum()
+    Yr_post = df_agg.loc[(df_agg[resp] == 1) & (df_agg[period_col] == 'post') & (df_agg[group_col] == group_label), metric].sum()
     pct_deltaY = 100*((Yr_post/s)/(Yr_pre/s) - 1)
     
     grpSum = {
@@ -79,12 +78,12 @@ def groupSummary(df_agg, sub_id, period_col, resp, metric, group_col, group_labe
               'PostTakers': Yr_post,
               'PctIncrease': pct_deltaY
     }
+
     return grpSum
 
 def computeLift(Treat, Ctrl):
     
     """X"""
-    
     liftTreat = (Treat['PctTakeUp']*Treat['PctIncrease']*0.0001)*(Treat['InviteSize']*Treat['PreTakers']/Treat['Response'])
     liftCtrl = (Ctrl['PctTakeUp']*Ctrl['PctIncrease']*0.0001)*(Treat['InviteSize']*Treat['PreTakers']/Treat['Response'])
     liftIncrement = liftTreat - liftCtrl
@@ -99,7 +98,7 @@ def computeLift(Treat, Ctrl):
 def evaluateCampaign(df, sub_id, group_col, resp, period_col, metrics_cols, ctrl_val = 1):
     
     """X"""
-    
+    print('+++'*10)
     df_agg = aggDF(df, sub_id, group_col, resp, period_col, metrics_cols)
     result = {}
 
@@ -109,14 +108,18 @@ def evaluateCampaign(df, sub_id, group_col, resp, period_col, metrics_cols, ctrl
     elif isinstance(metrics_cols, list):
         metrics_cols = metrics_cols
 
+    result = {}
     for metric in metrics_cols:
+
         groups = df_agg[group_col].unique()
+
         for g in groups:
             if (g == ctrl_val):
                 Ctrl = groupSummary(df_agg, sub_id, period_col, resp, metric, group_col, g)
+
             else:
                 Treat = groupSummary(df_agg, sub_id, period_col, resp, metric, group_col, g)
-            
+
         result.update({metric + '_Lift' : computeLift(Treat, Ctrl)})
     
     return result
