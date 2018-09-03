@@ -57,12 +57,13 @@ def calculate_lift(filename):
             "user_group": request.form.get("user_group"),
             "user_response": request.form.get("user_response"),
             "campaign_period": request.form.get("campaign_period"),
-            "metrics_list": request.form.getlist("metrics_list") if len(request.form.getlist("metrics_list")) > 1 else str(request.form.get("metrics_list")),
+            "metrics_list": request.form.getlist("metrics_list") ##if len(request.form.getlist("metrics_list")) > 1 else str(request.form.get("metrics_list")),
         }
 
         df = pd.read_csv(os.path.join(app.config["UPLOAD_FOLDER"], filename))
-        output = evaluateCampaign.evaluateCampaign(df, var_dict["user_id"], var_dict["user_group"], var_dict["user_response"],
-                         var_dict["campaign_period"], var_dict["metrics_list"])
+        output = evaluateCampaign.evaluateCampaign(df, *var_dict["metrics_list"], sub_id = var_dict["user_id"],
+                                                   group_col = var_dict["user_group"], resp = var_dict["user_response"],
+                                                   period_col = var_dict["campaign_period"])
 
     return render_template("calculate_lift.html",
                            output=output)
