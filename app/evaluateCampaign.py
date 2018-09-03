@@ -11,28 +11,28 @@ import pandas as pd
 # - ctrl_label: label value for the control group (default = control)
 # - treat_label: label value for the control group (default = treatment)
 
-def aggDF(df, sub_id, group_col, resp, period_col, metrics_cols):
+def aggDF(df, *metrics_cols, **kwargs):
    
     """X"""
     df = df.drop_duplicates(keep='first')
-    if isinstance(metrics_cols, str):
-        cols = [sub_id, resp, period_col, group_col, metrics_cols]
-        df = df.loc[:, cols]
-        df.loc[:, metrics_cols] = df.loc[:, metrics_cols].fillna(0)
-        col_agg = {metrics_cols: 'sum'}
 
+    cols = list(kwargs.values())
+    cols.extend(metrics_cols)
+    df = df.loc[:, cols]
+    df.loc[:, metrics_cols] = df.loc[:, metrics_cols].fillna(0)
+
+    if (len(metrics_cols) == 1):
+        col_agg = {metrics_cols[0]: 'sum'}
     else:
-        cols = [sub_id, resp, period_col, group_col]
-        cols.extend(metrics_cols)
-        df = df.loc[:, cols]
-        df.loc[:, metrics_cols] = df.loc[:, metrics_cols].fillna(0)
         col_agg = {col: 'sum' for col in metrics_cols}
 
-    df_metrics = df.groupby([group_col, resp, period_col]).agg(col_agg).reset_index()
+    df_metrics = df.groupby(list(kwargs.values())).agg(col_agg).reset_index()
 
-    df_subsCnt = df.groupby([group_col, resp]).agg({sub_id: 'nunique'}).reset_index()
+    df_subsCnt = df.groupby([kwargs['group_col'], kwargs['resp']]).agg({kwargs['sub_id']: 'nunique'}) \
+        .rename(columns={kwargs['sub_id']: 'subs_cnt'}).reset_index()
 
-    df_agg = pd.merge(df_metrics, df_subsCnt, on = [group_col, resp])
+    df_agg = pd.merge(df_metrics, df_subsCnt, on=[kwargs['group_col'], kwargs['resp']])
+
     return df_agg
 
 def uptakeRate(n_takers, n_sample):
@@ -53,21 +53,33 @@ def uptakeRate(n_takers, n_sample):
 # 9. Yr_pre :Pre Spend Taker per sub
 # 10. s * pct_deltaY * (r/s) * Yr_pre :Spend Lift Incremental (target or treatment)
 
-def groupSummary(df_agg, sub_id, period_col, resp, metric, group_col, group_label):
-    
+def groupSummary(df_agg, metric, group_label, **kwargs):
     """X"""
-    r = max(df_agg.loc[(df_agg[resp] == 1) & (df_agg[group_col] == group_label), sub_id]) 
-    nr = max(df_agg.loc[(df_agg[resp] == 0) & (df_agg[group_col] == group_label), sub_id])
+
+    r = max(df_agg.loc[(df_agg[kwargs['resp']] == 1) &
+                       (df_agg[kwargs['group_col']] == group_label),
+                       kwargs['sub_id']])
+    nr = max(df_agg.loc[(df_agg[kwargs['resp']] == 0) &
+                        (df_agg[kwargs['group_col']] == group_label),
+                        kwargs['sub_id']])
     s = r + nr
-    takeRate = 100*(r/s)
+    takeRate = 100 * (r / s)
+    Ys_pre = df_agg.loc[(df_agg[kwargs['period_col']] == 'pre') &
+                        (df_agg[kwargs['group_col']] == group_label),
+                        metric].sum()
+    Ys_post = df_agg.loc[(df_agg[kwargs['period_col']] == 'post') &
+                         (df_agg[kwargs['group_col']] == group_label),
+                         metric].sum()
+    Yr_pre = df_agg.loc[(df_agg[kwargs['resp']] == 1) &
+                        (df_agg[kwargs['period_col']] == 'pre') &
+                        (df_agg[kwargs['group_col']] == group_label),
+                        metric].sum()
+    Yr_post = df_agg.loc[(df_agg[kwargs['resp']] == 1) &
+                         (df_agg[kwargs['period_col']] == 'post') &
+                         (df_agg[kwargs['group_col']] == group_label),
+                         metric].sum()
+    pct_deltaY = 100 * ((Yr_post / s) / (Yr_pre / s) - 1)
 
-
-    Ys_pre = df_agg.loc[(df_agg[period_col] == 'pre') & (df_agg[group_col] == group_label), metric].sum()
-    Ys_post = df_agg.loc[(df_agg[period_col] == 'post') & (df_agg[group_col] == group_label), metric].sum()
-    Yr_pre = df_agg.loc[(df_agg[resp] == 1) & (df_agg[period_col] == 'pre') & (df_agg[group_col] == group_label), metric].sum()
-    Yr_post = df_agg.loc[(df_agg[resp] == 1) & (df_agg[period_col] == 'post') & (df_agg[group_col] == group_label), metric].sum()
-    pct_deltaY = 100*((Yr_post/s)/(Yr_pre/s) - 1)
-    
     grpSum = {
               'InviteSize': s,
               'Response': r,
@@ -80,6 +92,7 @@ def groupSummary(df_agg, sub_id, period_col, resp, metric, group_col, group_labe
     }
 
     return grpSum
+
 
 def computeLift(Treat, Ctrl):
     
@@ -95,32 +108,23 @@ def computeLift(Treat, Ctrl):
     }
     return lift
 
-def evaluateCampaign(df, sub_id, group_col, resp, period_col, metrics_cols, ctrl_val = 1):
-    
+
+def evaluateCampaign(df, *metrics_cols, **kwargs):
     """X"""
-    print('+++'*10)
-    df_agg = aggDF(df, sub_id, group_col, resp, period_col, metrics_cols)
-    result = {}
-
-    if isinstance(metrics_cols, str):
-        metrics_cols = [metrics_cols]
-
-    elif isinstance(metrics_cols, list):
-        metrics_cols = metrics_cols
+    ctrl_val = 1 # need to be user-defined
+    df_agg = aggDF(df, *metrics_cols, **kwargs)
 
     result = {}
     for metric in metrics_cols:
-
-        groups = df_agg[group_col].unique()
-
+        groups = df_agg[kwargs['group_col']].unique()
         for g in groups:
+            print(g)
             if (g == ctrl_val):
-                Ctrl = groupSummary(df_agg, sub_id, period_col, resp, metric, group_col, g)
-
+                Ctrl = groupSummary(df_agg, metric, g, **kwargs)
             else:
-                Treat = groupSummary(df_agg, sub_id, period_col, resp, metric, group_col, g)
+                Treat = groupSummary(df_agg, metric, g, **kwargs)
 
-        result.update({metric + '_Lift' : computeLift(Treat, Ctrl)})
-    
+        result.update({metric + '_Lift': computeLift(Treat, Ctrl)})
+
     return result
 
