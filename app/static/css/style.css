@@ -1,0 +1,28 @@
+html {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  display: flex;
+  flex-flow: row wrap;
+  width: 100%;
+  height: 100%;
+}
+
+.container {
+  text-align: center;
+  background-color: black;
+  width: 100%;
+  height: 100%;
+
+}
+
+.below-the-fold {
+  background-color: lavender;
+  text-align: center;
+  width: 100%;
+  height: 100%;
+}

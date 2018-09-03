@@ -3,7 +3,8 @@
 
 {% block content %}
 
-<div class="container" style="margin-top: 5%; text-align: center">
+<link rel="stylesheet" type="text/css" href="../static/css/style.css"/>
+<div class="container">
 
 	{% with messages = get_flashed_messages() %}
 	  {% if messages %}
@@ -35,11 +36,12 @@
             <!--Browse...-->
         <!--</label>-->
         <input type="file" name="file" class="form-control" readonly="">
-    </div>
+    </div> <br> <br>
     <button type="submit" class="btn btn-primary">Upload</button>
     </form>
 
 </div>
-
+<div class="below-the-fold">
+	Helo
+</div>
 {% endblock %}
-
