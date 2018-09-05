@@ -10,6 +10,8 @@ import pandas as pd
 # - group_col: column indicating the group assignment of the obs (i.e. treatment, control)
 # - ctrl_label: label value for the control group (default = control)
 # - treat_label: label value for the control group (default = treatment)
+def exclude_keys(d, keys):
+    return {x: d[x] for x in d if x not in keys}
 
 def aggDF(df, *metrics_cols, **kwargs):
    
@@ -18,6 +20,8 @@ def aggDF(df, *metrics_cols, **kwargs):
 
     cols = list(kwargs.values())
     cols.extend(metrics_cols)
+    agg_cols = exclude_keys(kwargs, 'sub_id')
+
     df = df.loc[:, cols]
     df.loc[:, metrics_cols] = df.loc[:, metrics_cols].fillna(0)
 
@@ -26,10 +30,10 @@ def aggDF(df, *metrics_cols, **kwargs):
     else:
         col_agg = {col: 'sum' for col in metrics_cols}
 
-    df_metrics = df.groupby(list(kwargs.values())).agg(col_agg).reset_index()
+    df_metrics = df.groupby(list(agg_cols.values())).agg(col_agg).reset_index()
 
     df_subsCnt = df.groupby([kwargs['group_col'], kwargs['resp']]).agg({kwargs['sub_id']: 'nunique'}) \
-        .rename(columns={kwargs['sub_id']: 'subs_cnt'}).reset_index()
+        .rename(columns={kwargs['sub_id']: kwargs['sub_id'] + '_cnt'}).reset_index()
 
     df_agg = pd.merge(df_metrics, df_subsCnt, on=[kwargs['group_col'], kwargs['resp']])
 
@@ -58,10 +62,10 @@ def groupSummary(df_agg, metric, group_label, **kwargs):
 
     r = max(df_agg.loc[(df_agg[kwargs['resp']] == 1) &
                        (df_agg[kwargs['group_col']] == group_label),
-                       kwargs['sub_id']])
+                       kwargs['sub_id'] + '_cnt'])
     nr = max(df_agg.loc[(df_agg[kwargs['resp']] == 0) &
                         (df_agg[kwargs['group_col']] == group_label),
-                        kwargs['sub_id']])
+                        kwargs['sub_id'] + '_cnt'])
     s = r + nr
     takeRate = 100 * (r / s)
     Ys_pre = df_agg.loc[(df_agg[kwargs['period_col']] == 'pre') &
