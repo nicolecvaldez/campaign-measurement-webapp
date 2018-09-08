@@ -17,31 +17,39 @@
 	  {% endif %}
 	{% endwith %}
 
-    <img src="{{ url_for('static', filename = 'img/How-to-Measure-the-Success-of-Your-Online-Marketing-Campaigns.png') }}" height="250" align="middle">
-    <h1>Measurements</h1>
+    <!-- <img src="{{ url_for('static', filename = 'img/How-to-Measure-the-Success-of-Your-Online-Marketing-Campaigns.png') }}" height="250" align="middle"> -->
+
+		<div id="controls">
+	    <h1>Measurements</h1>
+	    <br>
+
+			<div id="items">
+		    <ol style="list-style-position:inside;">
+		        <li>Upload your data!</li>
+		        <li>Wait for us to finish processing!</li>
+		        <li>Get your results!</li>
+		    </ol>
+			</div>
+
+			<form class="form-inline center-block" action="/" method="POST" enctype="multipart/form-data">
+	    <div class="input-group">
+	        <!--<label id="browsebutton" class="btn btn-default input-group-addon" for="my-file-selector" style="background-color:white">-->
+	            <!--<input id="my-file-selector" type="file" style="display:none;">-->
+	            <!--Browse...-->
+	        <!--</label>-->
+	        <input type="file" name="file" class="form-control" readonly="">
+	    </div> <br> <br>
+	    <button type="submit" class="btn btn-primary">Upload</button>
+	    </form>
+		</div>
     <br>
-
-    <ol style="list-style-position:inside;">
-        <li>Upload your data!</li>
-        <li>Wait for us to finish processing!</li>
-        <li>Get your results!</li>
-    </ol>
-
-    <br>
-
-    <form class="form-inline center-block" action="/" method="POST" enctype="multipart/form-data">
-    <div class="input-group">
-        <!--<label id="browsebutton" class="btn btn-default input-group-addon" for="my-file-selector" style="background-color:white">-->
-            <!--<input id="my-file-selector" type="file" style="display:none;">-->
-            <!--Browse...-->
-        <!--</label>-->
-        <input type="file" name="file" class="form-control" readonly="">
-    </div> <br> <br>
-    <button type="submit" class="btn btn-primary">Upload</button>
-    </form>
 
 </div>
 <div class="below-the-fold">
-	Helo
+	Meet the people behind the product.
+	<br><br><br><br>
+	Hi
+	<br><br><br><br>
+	Nihao
 </div>
 {% endblock %}
