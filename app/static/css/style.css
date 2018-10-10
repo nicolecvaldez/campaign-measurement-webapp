@@ -10,11 +10,14 @@ html, body {
 }
 
 .container {
-  background-color: black;
   width: 100%;
   height: 100%;
   overflow: hidden;
   padding: 0;
+}
+
+#landing {
+  background-color: black;
 }
 
 .container::after {
@@ -61,11 +64,11 @@ html, body {
     }
 
       #header p {
-        font-size: 2em;
+        font-size: 5vw;
       }
 
       #header h1 {
-        font-size: 6em;
+        font-size: 10vw;
       }
 
     #items {
@@ -93,7 +96,8 @@ html, body {
       }
 
       .item-emphasis {
-        font-size: 32px;
+        font-size: 1.5em;
+        font-weight: bold;
       }
 
     #upload-form {
@@ -121,8 +125,38 @@ html, body {
     }
 
 .below-the-fold {
-  background-color: lavender;
   text-align: center;
   width: 100%;
   height: 100%;
+  padding: 0 1vw;
+  display: flex;
+  flex-flow: column wrap;
+  justify-content: center;
 }
+  #below-fold-1 {
+    background-color: lavender;
+  }
+
+  #below-fold-2 {
+    background-color: green;
+  }
+
+  #below-fold-3 {
+    background-color: pink;
+  }
+
+  #header-below-fold {
+    display: flex;
+    flex-flow: column wrap;
+    justify-content: flex-end;
+
+    margin-bottom: 10px;
+  }
+
+    #header-below-fold p {
+      font-size: 4vw;
+    }
+
+    #header-below-fold h1 {
+      font-size: 10vw;
+    }
