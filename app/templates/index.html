@@ -3,7 +3,15 @@
 
 {% block content %}
 
-<div class="container" style="margin-top: 5%; text-align: center">
+<head>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+</head>
+
+<!-- links for front end -->
+<link rel="stylesheet" type="text/css" href="../static/css/style.css"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<div class="container" id="landing">
 
 	{% with messages = get_flashed_messages() %}
 	  {% if messages %}
@@ -16,30 +24,78 @@
 	  {% endif %}
 	{% endwith %}
 
-    <img src="{{ url_for('static', filename = 'img/How-to-Measure-the-Success-of-Your-Online-Marketing-Campaigns.png') }}" height="250" align="middle">
-    <h1>Measurements</h1>
+    <!-- <img src="{{ url_for('static', filename = 'img/How-to-Measure-the-Success-of-Your-Online-Marketing-Campaigns.png') }}" height="250" align="middle"> -->
+
+		<div id="controls">
+			<div id="header">
+					<h1>[Measurement.py]</h1> <br>
+					<p>
+						There are only 3 easy steps to use our app.
+					</p>
+			</div>
+
+			<div id="items">
+        <div class='item-steps'>
+					<p>1<br>
+					<span class="item-emphasis"><i class="fa fa-upload"></i>&nbsp;Upload</span><br>
+					Upload your csv!</p>
+				</div>
+				<br>
+        <div class='item-steps'>
+						<p>2<br>
+						<span class="item-emphasis"><i class="fa fa-hourglass-half"></i>&nbsp;Wait</span><br>
+						Wait for us to finish processing!</p>
+				</div>
+				<br>
+				<div class='item-steps'>
+					<p>3<br>
+					<span class="item-emphasis"><i class="fa fa-check"></i>&nbsp;Done!</span><br>
+					Get your results!</p>
+				</div>
+				<br>
+			</div>
+		</div>
     <br>
+</div>
 
-    <ol style="list-style-position:inside;">
-        <li>Upload your data!</li>
-        <li>Wait for us to finish processing!</li>
-        <li>Get your results!</li>
-    </ol>
 
-    <br>
+<div class="below-the-fold" id="below-fold-1">
+	<div id="header-below-fold">
+			<h1>1. Upload</h1> <br>
+			<p>Upload the csv you'd like us to analyze.</p>
+	</div>
+	<div id="upload-form">
+		<form action="/" id="formz" method="POST" enctype="multipart/form-data">
+			<!--<label id="browsebutton" class="btn btn-default input-group-addon" for="my-file-selector" style="background-color:white">-->
+					<!--<input id="my-file-selector" type="file" style="display:none;">-->
+					<!--Browse...-->
+			<!--</label>-->
+			<input type="file" name="file" class="form-control" readonly=""/>
+			<br><br><br>
+			<button type="submit" id="upload-button">Upload</button>
+		</form>
+	</div>
+</div>
 
-    <form class="form-inline center-block" action="/" method="POST" enctype="multipart/form-data">
-    <div class="input-group">
-        <!--<label id="browsebutton" class="btn btn-default input-group-addon" for="my-file-selector" style="background-color:white">-->
-            <!--<input id="my-file-selector" type="file" style="display:none;">-->
-            <!--Browse...-->
-        <!--</label>-->
-        <input type="file" name="file" class="form-control" readonly="">
-    </div>
-    <button type="submit" class="btn btn-primary">Upload</button>
-    </form>
+<div class="below-the-fold" id="below-fold-2">
+	<div id="header-below-fold">
+			<h1>2. Wait</h1> <br>
+			<p>Be patient as our program runs its analysis automagically!</p>
+	</div>
+</div>
 
+<div class="below-the-fold" id="below-fold-3">
+	<div id="header-below-fold">
+			<h1>3. Done!</h1> <br>
+			<p>You'll be able to download the results straight within your browser!</p>
+	</div>
+</div>
+
+<div class="below-the-fold" id="below-fold-4">
+	<div id="header-below-fold">
+			<h1>How is this possible?</h1> <br>
+			<p>Through faith, trust, pixie dust, and a whole lotta Python.</p>
+	</div>
 </div>
 
 {% endblock %}
-
